@@ -29,14 +29,16 @@ jobs:
           mkdir -p output
           cp build/app/outputs/flutter-apk/app-release.apk output/
 
-      - name: Send email with APK (No Auth)
+      - name: Send email with APK
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.freesmtpservers.com
-          server_port: 25
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
           subject: "Flutter APK Build - main branch"
           to: rishabh9807mishra@gmail.com
-          from: notify@rishabh.com
-          body: "Attached is the APK built from develop branch push."
+          from: ${{ secrets.MAIL_FROM }}
+          body: "Attached is the APK built from the main branch push."
           attachments: output/app-release.apk
-          secure: false  # No SSL/TLS
+          secure: true
