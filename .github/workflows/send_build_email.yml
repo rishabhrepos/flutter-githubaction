@@ -1,0 +1,42 @@
+name: Build and Email Flutter APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-email:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Archive APK
+        run: |
+          mkdir -p output
+          cp build/app/outputs/flutter-apk/app-release.apk output/
+
+      - name: Send email with APK (No Auth)
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.freesmtpservers.com
+          server_port: 25
+          subject: "Flutter APK Build - main branch"
+          to: rishabh9807mishra@gmail.com
+          from: notify@rishabh.com
+          body: "Attached is the APK built from develop branch push."
+          attachments: output/app-release.apk
+          secure: false  # No SSL/TLS
