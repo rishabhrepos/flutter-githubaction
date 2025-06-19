@@ -24,21 +24,30 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Archive APK
+      - name: Zip the APK to bypass Gmail restrictions
         run: |
           mkdir -p output
           cp build/app/outputs/flutter-apk/app-release.apk output/
+          cd output
+          zip app-release.zip app-release.apk
 
-      - name: Send email with APK
+      - name: Send email with zipped APK via Gmail SMTP
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "Flutter APK Build - main branch"
-          to: rishabh9807mishra@gmail.com
-          from: ${{ secrets.MAIL_FROM }}
-          body: "Attached is the APK built from the main branch push."
-          attachments: output/app-release.apk
+          username: ${{ secrets.MAIL_USERNAME }}   # e.g. your@gmail.com
+          password: ${{ secrets.MAIL_PASSWORD }}   # Gmail App Password
+          subject: "Flutter APK Build (develop branch)"
+          to: rishabh9807mishra@gmail.com              # e.g. recipient@example.com
+          from: ${{ secrets.MAIL_FROM }}           # e.g. your@gmail.com
+          body: |
+            Hello,
+
+            The latest Flutter APK build from the 'develop' branch is attached as a ZIP file.
+
+            Please unzip and install on your device.
+
+            - GitHub Actions Bot
+          attachments: output/app-release.zip
           secure: true
